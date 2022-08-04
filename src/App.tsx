@@ -8,7 +8,6 @@ export function App() {
     <ThemeProvider theme={defaultTheme}>
       Helloworld
       <button>teste</button>
-
       <GlobalStyle />
     </ThemeProvider>
   )
