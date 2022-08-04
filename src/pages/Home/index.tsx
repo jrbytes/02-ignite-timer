@@ -1,5 +1,6 @@
 import { Play } from 'phosphor-react'
 import { useForm } from 'react-hook-form'
+
 import {
   CountdownContainer,
   FormContainer,
@@ -10,11 +11,23 @@ import {
   TaskInput,
 } from './styles'
 
-export function Home() {
-  const { register, handleSubmit, watch } = useForm()
+interface NewCycleFormData {
+  task: string
+  minutesAmount: number
+}
 
-  function onSubmit(data: any) {
+export function Home() {
+  const { register, handleSubmit, watch, reset } = useForm<NewCycleFormData>({
+    mode: 'onSubmit',
+    defaultValues: {
+      task: '',
+      minutesAmount: 0,
+    },
+  })
+
+  function handleCreateNewCycle(data: NewCycleFormData) {
     console.log(data)
+    reset()
   }
 
   const task = watch('task')
@@ -22,14 +35,19 @@ export function Home() {
 
   return (
     <HomeContainer>
-      <form onSubmit={handleSubmit(onSubmit)} action="">
+      <form onSubmit={handleSubmit(handleCreateNewCycle)} action="">
         <FormContainer>
           <label htmlFor="task">Vou trabalhar em</label>
           <TaskInput
             id="task"
             list="task-suggestions"
             placeholder="Dê um nome para o seu projeto"
-            {...register('task')}
+            {...register('task', {
+              minLength: {
+                value: 1,
+                message: 'Informe a tarefa',
+              },
+            })}
           />
 
           <datalist id="task-suggestions">
@@ -45,9 +63,17 @@ export function Home() {
             id="minutesAmount"
             placeholder="00"
             step={5}
-            min={5}
-            max={60}
-            {...register('minutesAmount', { valueAsNumber: true })}
+            {...register('minutesAmount', {
+              min: {
+                value: 5,
+                message: 'O ciclo precisa ser no mínimo 5 minutos',
+              },
+              max: {
+                value: 60,
+                message: 'O ciclo precisa ser no máximo 60 minutos',
+              },
+              required: true,
+            })}
           />
 
           <span>minutos.</span>
